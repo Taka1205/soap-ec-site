@@ -1,0 +1,23 @@
+{
+  "name": "soap-ec-site",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=18.14.1"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "astro": "^4.16.19",
+    "microcms-js-sdk": "^3.4.0"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.9"
+  }
+}
