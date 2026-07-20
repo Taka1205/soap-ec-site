@@ -1,0 +1,135 @@
+---
+// src/pages/about.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const values = [
+  {
+    title: 'コールドプロセス製法',
+    body: '熱を加えずに素材の恵みを閉じ込める伝統的な製法。グリセリンが豊富に残り、しっとりとした使い心地を生み出します。',
+  },
+  {
+    title: '国産素材へのこだわり',
+    body: '使用するオイルや素材はできる限り国内産を選んでいます。産地や農家との関係を大切にしながら作っています。',
+  },
+  {
+    title: '少量生産・手作業',
+    body: '大量生産はしていません。一度に作れる量に限りがあるからこそ、一つひとつの品質を目で確かめながら作ることができます。',
+  },
+];
+---
+
+<BaseLayout
+  title="About"
+  description="石鹸ブランドについて。ブランドの成り立ちと素材・製法へのこだわりをご紹介します。"
+>
+  <section class="page-hero">
+    <div class="page-hero__image-wrap">
+      <img
+        src="https://placehold.co/1920x600/e8e4de/8b7355?text=About"
+        alt="Aboutページビジュアル"
+        class="page-hero__image"
+      />
+    </div>
+    <div class="page-hero__content">
+      <p class="page-hero__label">About</p>
+      <h1 class="page-hero__title">石鹸と、<br />これからのこと。</h1>
+    </div>
+  </section>
+
+  <section class="brand-story">
+    <div class="container brand-story__inner">
+      <div class="brand-story__image-wrap">
+        <img
+          src="https://placehold.co/600x800/e8e4de/8b7355?text=Story"
+          alt="ブランドストーリー"
+          class="brand-story__image"
+        />
+      </div>
+      <div class="brand-story__text">
+        <p class="section-label">Brand Story</p>
+        <h2 class="brand-story__heading">肌に触れるものだから、<br />本物を届けたい。</h2>
+        <p class="brand-story__body">
+          このブランドは、自分自身の肌トラブルをきっかけに生まれました。市販の製品を使うたびに感じていた違和感。成分表を読み解くうちに、「自分で作れるのではないか」という思いに至りました。
+        </p>
+        <p class="brand-story__body">
+          最初の石鹸は、台所で作った小さなひとつでした。それを使った日の夜、肌のつっぱりがなかったことが忘れられません。以来、素材と向き合いながら石鹸を作り続けています。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="values">
+    <div class="container">
+      <p class="section-label" style="text-align:center;">Our Values</p>
+      <ul class="values__list">
+        {values.map((v, i) => (
+          <li class="values__item">
+            <span class="values__number">0{i + 1}</span>
+            <div>
+              <h3 class="values__title">{v.title}</h3>
+              <p class="values__body">{v.body}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Page Hero */
+  .page-hero { position: relative; height: 50svh; min-height: 320px; overflow: hidden; }
+  .page-hero__image-wrap { position: absolute; inset: 0; }
+  .page-hero__image { width: 100%; height: 100%; object-fit: cover; }
+  .page-hero__content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: rgba(250, 249, 247, 0.45);
+    padding: 2rem;
+  }
+  .page-hero__label {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .page-hero__title { font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 300; line-height: 1.6; }
+
+  /* Brand Story */
+  .brand-story { padding: var(--spacing-section) 0; }
+  .brand-story__inner { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+  @media (min-width: 768px) {
+    .brand-story__inner { grid-template-columns: 1fr 1fr; align-items: center; }
+  }
+  .brand-story__image { width: 100%; aspect-ratio: 3/4; object-fit: cover; }
+  .brand-story__heading {
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  .brand-story__body { font-size: 0.9rem; color: var(--color-text-light); line-height: 1.9; margin-bottom: 1rem; }
+
+  /* Values */
+  .values { padding: var(--spacing-section) 0; background-color: #f5f1ec; }
+  .values__list { list-style: none; display: flex; flex-direction: column; gap: 3rem; max-width: 680px; margin: 0 auto; }
+  .values__item { display: grid; grid-template-columns: 3rem 1fr; gap: 1.5rem; }
+  .values__number { font-size: 1.5rem; font-weight: 200; color: var(--color-accent); line-height: 1; padding-top: 0.25rem; }
+  .values__title { font-size: 1rem; font-weight: 500; margin-bottom: 0.75rem; }
+  .values__body { font-size: 0.875rem; color: var(--color-text-light); line-height: 1.9; }
+</style>
