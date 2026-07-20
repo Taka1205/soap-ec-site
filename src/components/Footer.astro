@@ -1,0 +1,35 @@
+---
+// src/components/Footer.astro
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <p class="footer__logo">SOAP BRAND</p>
+    <p class="footer__copy">&copy; {new Date().getFullYear()} Soap Brand. All rights reserved.</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--color-border);
+    padding: 2.5rem 0;
+    margin-top: var(--spacing-section);
+  }
+  .footer__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+  }
+  .footer__logo {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--color-accent);
+  }
+  .footer__copy {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+  }
+</style>

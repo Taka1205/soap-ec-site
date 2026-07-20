@@ -1,0 +1,66 @@
+---
+// src/components/Header.astro
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About' },
+  { href: '/news', label: 'News' },
+];
+const currentPath = Astro.url.pathname;
+---
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="/" class="header__logo">SOAP BRAND</a>
+    <nav class="header__nav">
+      <ul class="header__nav-list">
+        {navLinks.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class:list={['header__nav-link', { 'is-active': currentPath === href }]}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .header__logo {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--color-accent);
+  }
+  .header__nav-list {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .header__nav-link {
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+    color: var(--color-text-light);
+    transition: color 0.2s;
+  }
+  .header__nav-link:hover,
+  .header__nav-link.is-active {
+    color: var(--color-accent);
+  }
+</style>
