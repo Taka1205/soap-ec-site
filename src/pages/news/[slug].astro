@@ -13,6 +13,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     return [
       { params: { slug: 'mock-1' } },
       { params: { slug: 'mock-2' } },
+      { params: { slug: 'mock-3' } },
     ];
   }
 };
@@ -36,9 +37,12 @@ const formattedDate = new Date(news.publishedAt).toLocaleDateString('ja-JP', {
   month: 'long',
   day: 'numeric',
 });
+
+const rawDescription = news.body.replace(/<[^>]+>/g, '').slice(0, 120);
+const description = rawDescription.length === 120 ? rawDescription + '…' : rawDescription;
 ---
 
-<BaseLayout title={news.title} description={news.title} ogImage={news.eyecatch?.url}>
+<BaseLayout title={news.title} description={description} ogImage={news.eyecatch?.url}>
   <article class="news-detail">
     <div class="container">
       <header class="news-detail__header">
