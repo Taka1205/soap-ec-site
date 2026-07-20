@@ -1,0 +1,50 @@
+---
+// src/components/NewsCard.astro
+import type { News } from '../lib/microcms';
+
+interface Props {
+  news: News;
+}
+
+const { news } = Astro.props;
+const formattedDate = new Date(news.publishedAt).toLocaleDateString('ja-JP', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<article class="news-card">
+  <a href={`/news/${news.id}`} class="news-card__link">
+    <div class="news-card__image-wrap">
+      <img
+        src={news.eyecatch?.url ?? 'https://placehold.co/400x300/e8e4de/8b7355?text=News'}
+        alt={news.title}
+        class="news-card__image"
+        loading="lazy"
+        width={news.eyecatch?.width ?? 400}
+        height={news.eyecatch?.height ?? 300}
+      />
+    </div>
+    <div class="news-card__body">
+      <time class="news-card__date" datetime={news.publishedAt}>{formattedDate}</time>
+      <h2 class="news-card__title">{news.title}</h2>
+    </div>
+  </a>
+</article>
+
+<style>
+  .news-card__link { display: block; transition: opacity 0.2s; }
+  .news-card__link:hover { opacity: 0.75; }
+  .news-card__image-wrap { overflow: hidden; aspect-ratio: 4/3; }
+  .news-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  .news-card__link:hover .news-card__image { transform: scale(1.03); }
+  .news-card__body { padding: 1rem 0; }
+  .news-card__date { display: block; font-size: 0.75rem; color: var(--color-text-light); margin-bottom: 0.5rem; }
+  .news-card__title { font-size: 0.9rem; font-weight: 400; line-height: 1.6; }
+</style>

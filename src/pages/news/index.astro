@@ -1,0 +1,49 @@
+---
+// src/pages/news/index.astro
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import { getNewsList } from '../../lib/microcms';
+import type { News } from '../../lib/microcms';
+
+let newsList: News[] = [];
+try {
+  const { contents } = await getNewsList(20);
+  newsList = contents;
+} catch {
+  newsList = [
+    { id: 'mock-1', title: '【モック】新商品のお知らせ', body: '<p>新しい石鹸が入荷しました。</p>', publishedAt: '2026-07-20T00:00:00.000Z' },
+    { id: 'mock-2', title: '【モック】夏季休業のご案内', body: '<p>休業期間のご案内です。</p>', publishedAt: '2026-07-15T00:00:00.000Z' },
+  ];
+}
+---
+
+<BaseLayout title="News" description="石鹸ブランドからのお知らせ・ブログ記事の一覧です。">
+  <section class="news-index">
+    <div class="container">
+      <div class="page-header">
+        <p class="page-header__label">News</p>
+        <h1 class="page-header__title">お知らせ</h1>
+      </div>
+      {newsList.length === 0 ? (
+        <p class="news-empty">現在お知らせはありません。</p>
+      ) : (
+        <ul class="news-grid">
+          {newsList.map((news) => (
+            <li><NewsCard news={news} /></li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .news-index { padding: var(--spacing-section) 0; }
+  .page-header { text-align: center; margin-bottom: 4rem; }
+  .page-header__label { font-size: 0.7rem; letter-spacing: 0.3em; color: var(--color-accent); text-transform: uppercase; margin-bottom: 0.75rem; }
+  .page-header__title { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 300; }
+  .news-grid { list-style: none; display: grid; grid-template-columns: 1fr; gap: 3rem; }
+  @media (min-width: 640px) { .news-grid { grid-template-columns: repeat(2, 1fr); gap: 3rem 2rem; } }
+  @media (min-width: 1024px) { .news-grid { grid-template-columns: repeat(3, 1fr); } }
+  .news-empty { text-align: center; color: var(--color-text-light); padding: 4rem 0; }
+</style>
