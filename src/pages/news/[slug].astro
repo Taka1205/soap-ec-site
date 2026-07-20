@@ -1,0 +1,88 @@
+---
+// src/pages/news/[slug].astro
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllNewsSlugs, getNewsDetail } from '../../lib/microcms';
+import type { GetStaticPaths } from 'astro';
+import type { News } from '../../lib/microcms';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  try {
+    const slugs = await getAllNewsSlugs();
+    return slugs.map((slug) => ({ params: { slug } }));
+  } catch {
+    return [
+      { params: { slug: 'mock-1' } },
+      { params: { slug: 'mock-2' } },
+    ];
+  }
+};
+
+const { slug } = Astro.params;
+
+let news: News;
+try {
+  news = await getNewsDetail(slug);
+} catch {
+  news = {
+    id: slug,
+    title: '【モック】記事タイトル',
+    body: '<p>MicroCMSのAPIキーを設定すると実際の記事が表示されます。</p>',
+    publishedAt: new Date().toISOString(),
+  };
+}
+
+const formattedDate = new Date(news.publishedAt).toLocaleDateString('ja-JP', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={news.title} description={news.title} ogImage={news.eyecatch?.url}>
+  <article class="news-detail">
+    <div class="container">
+      <header class="news-detail__header">
+        <time class="news-detail__date" datetime={news.publishedAt}>{formattedDate}</time>
+        <h1 class="news-detail__title">{news.title}</h1>
+      </header>
+
+      {news.eyecatch && (
+        <div class="news-detail__eyecatch">
+          <img
+            src={news.eyecatch.url}
+            alt={news.title}
+            width={news.eyecatch.width}
+            height={news.eyecatch.height}
+          />
+        </div>
+      )}
+
+      <div class="news-detail__body" set:html={news.body} />
+
+      <div class="news-detail__back">
+        <a href="/news" class="text-link">← お知らせ一覧へ</a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .news-detail { padding: var(--spacing-section) 0; }
+  .news-detail__header { max-width: 720px; margin: 0 auto 2.5rem; text-align: center; }
+  .news-detail__date { display: block; font-size: 0.8rem; color: var(--color-text-light); margin-bottom: 1rem; }
+  .news-detail__title { font-size: clamp(1.25rem, 3vw, 1.75rem); font-weight: 400; line-height: 1.6; }
+  .news-detail__eyecatch { max-width: 800px; margin: 0 auto 3rem; }
+  .news-detail__eyecatch img { width: 100%; height: auto; aspect-ratio: 16/9; object-fit: cover; }
+  .news-detail__body { max-width: 720px; margin: 0 auto; font-size: 0.95rem; line-height: 1.9; }
+  .news-detail__body :global(p) { margin-bottom: 1.5rem; }
+  .news-detail__body :global(h2) {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .news-detail__body :global(img) { width: 100%; height: auto; margin: 2rem 0; }
+  .news-detail__body :global(a) { color: var(--color-accent); text-decoration: underline; }
+  .news-detail__back { max-width: 720px; margin: 3rem auto 0; padding-top: 2rem; border-top: 1px solid var(--color-border); }
+</style>
