@@ -1,17 +1,139 @@
 ---
+// src/pages/index.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSection from '../components/HeroSection.astro';
+import { getNewsList } from '../lib/microcms';
+import type { News } from '../lib/microcms';
 
+let latestNews: News[] = [];
+try {
+  const { contents } = await getNewsList(3);
+  latestNews = contents;
+} catch {
+  latestNews = [
+    { id: 'mock-1', title: '【モック】新商品のお知らせ', body: '', publishedAt: '2026-07-20T00:00:00.000Z' },
+    { id: 'mock-2', title: '【モック】夏季休業のご案内', body: '', publishedAt: '2026-07-15T00:00:00.000Z' },
+    { id: 'mock-3', title: '【モック】ブランドサイトオープン', body: '', publishedAt: '2026-07-01T00:00:00.000Z' },
+  ];
+}
+
+const features = [
+  { icon: '🌿', title: '天然素材', description: '化学添加物を使わず、自然由来の素材のみで作られています。' },
+  { icon: '✋', title: '手作り製法', description: 'コールドプロセス製法で一つひとつ丁寧に手作りしています。' },
+  { icon: '🫧', title: '豊かな泡立ち', description: 'グリセリンが豊富に残り、しっとりとした使い心地を生み出します。' },
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Home" description="自然素材にこだわった手作り石鹸ブランド。">
+  <HeroSection />
+
+  <section class="features">
+    <div class="container">
+      <p class="section-label">Our Philosophy</p>
+      <ul class="features__list">
+        {features.map((f) => (
+          <li class="features__item">
+            <span class="features__icon">{f.icon}</span>
+            <h2 class="features__name">{f.title}</h2>
+            <p class="features__desc">{f.description}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="home-news">
+    <div class="container">
+      <p class="section-label">Latest News</p>
+      <ul class="home-news__list">
+        {latestNews.map((news) => (
+          <li class="home-news__item">
+            <a href={`/news/${news.id}`} class="home-news__link">
+              <time class="home-news__date" datetime={news.publishedAt}>
+                {new Date(news.publishedAt).toLocaleDateString('ja-JP')}
+              </time>
+              <span class="home-news__title">{news.title}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div class="home-news__more">
+        <a href="/news" class="text-link">すべてのお知らせを見る →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-store">
+    <div class="container cta-store__inner">
+      <p class="section-label">Online Store</p>
+      <p class="cta-store__text">近日公開予定です。お楽しみに。</p>
+      <span class="cta-store__badge">Coming Soon</span>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    color: var(--color-accent);
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+  }
+
+  /* Features */
+  .features { padding: var(--spacing-section) 0; }
+  .features__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  @media (min-width: 768px) {
+    .features__list { grid-template-columns: repeat(3, 1fr); }
+  }
+  .features__item { text-align: center; }
+  .features__icon { font-size: 2rem; display: block; margin-bottom: 1rem; }
+  .features__name { font-size: 1rem; font-weight: 500; margin-bottom: 0.75rem; }
+  .features__desc { font-size: 0.875rem; color: var(--color-text-light); line-height: 1.8; }
+
+  /* Home News */
+  .home-news { padding: var(--spacing-section) 0; background-color: #f5f1ec; }
+  .home-news__list { list-style: none; }
+  .home-news__item { border-bottom: 1px solid var(--color-border); }
+  .home-news__item:first-child { border-top: 1px solid var(--color-border); }
+  .home-news__link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.25rem 0;
+    transition: opacity 0.2s;
+  }
+  .home-news__link:hover { opacity: 0.7; }
+  @media (min-width: 768px) {
+    .home-news__link { flex-direction: row; gap: 2rem; align-items: center; }
+  }
+  .home-news__date { font-size: 0.8rem; color: var(--color-text-light); flex-shrink: 0; }
+  .home-news__title { font-size: 0.9rem; }
+  .home-news__more { text-align: right; margin-top: 1.5rem; }
+
+  /* CTA Store */
+  .cta-store { padding: var(--spacing-section) 0; }
+  .cta-store__inner {
+    text-align: center;
+    border: 1px solid var(--color-border);
+    padding: 4rem 2rem;
+  }
+  .cta-store__text { font-size: 0.875rem; color: var(--color-text-light); margin-bottom: 1.5rem; }
+  .cta-store__badge {
+    display: inline-block;
+    padding: 0.4rem 1.25rem;
+    border: 1px solid var(--color-border);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+  }
+</style>

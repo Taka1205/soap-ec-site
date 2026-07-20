@@ -1,0 +1,75 @@
+---
+// src/components/HeroSection.astro
+---
+
+<section class="hero">
+  <div class="hero__image-wrap">
+    <img
+      src="https://placehold.co/1920x900/e8e4de/8b7355?text=SOAP+BRAND"
+      alt="石鹸ブランドのヒーロービジュアル"
+      class="hero__image"
+      loading="eager"
+    />
+  </div>
+  <div class="hero__content">
+    <p class="hero__sub">Natural Handmade Soap</p>
+    <h1 class="hero__title">自然とともに、<br />肌に優しい石鹸を。</h1>
+    <a href="/about" class="hero__cta">ブランドについて</a>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    height: 80svh;
+    min-height: 480px;
+    overflow: hidden;
+  }
+  .hero__image-wrap {
+    position: absolute;
+    inset: 0;
+  }
+  .hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 2rem;
+    background: rgba(250, 249, 247, 0.4);
+  }
+  .hero__sub {
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+  .hero__title {
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    font-weight: 300;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+  }
+  .hero__cta {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .hero__cta:hover {
+    background-color: var(--color-accent);
+    color: white;
+  }
+</style>
