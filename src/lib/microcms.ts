@@ -16,27 +16,33 @@ type NewsListResponse = {
   limit: number;
 };
 
-const client = createClient({
-  serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN ?? '',
-  apiKey: import.meta.env.MICROCMS_API_KEY ?? '',
-});
+// 初回利用時に生成する。環境変数が未設定でもモジュールの読み込みでは失敗させず、
+// 各ページの try/catch（仮データ表示）でエラーを扱えるようにするため
+let client: ReturnType<typeof createClient> | undefined;
+function getClient() {
+  client ??= createClient({
+    serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN ?? '',
+    apiKey: import.meta.env.MICROCMS_API_KEY ?? '',
+  });
+  return client;
+}
 
 export async function getNewsList(limit = 10): Promise<NewsListResponse> {
-  return client.getList<News>({
+  return getClient().getList<News>({
     endpoint: 'news',
     queries: { orders: '-publishedAt', limit },
   });
 }
 
 export async function getNewsDetail(contentId: string): Promise<News> {
-  return client.getListDetail<News>({
+  return getClient().getListDetail<News>({
     endpoint: 'news',
     contentId,
   });
 }
 
 export async function getAllNewsSlugs(): Promise<string[]> {
-  const { contents } = await client.getList<News>({
+  const { contents } = await getClient().getList<News>({
     endpoint: 'news',
     queries: { fields: 'id', limit: 100 },
   });

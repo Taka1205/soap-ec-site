@@ -86,3 +86,17 @@ describe('getAllNewsSlugs', () => {
     expect(result).toEqual(['slug-1', 'slug-2']);
   });
 });
+
+describe('環境変数が未設定のとき', () => {
+  it('読み込み時には失敗せず、取得時にエラーになる（呼び出し側の仮データ表示に任せる）', async () => {
+    vi.resetModules();
+    const sdk = await import('microcms-js-sdk');
+    vi.mocked(sdk.createClient).mockImplementationOnce(() => {
+      throw new Error('parameter is required (check serviceDomain and apiKey)');
+    });
+
+    const mod = await import('./microcms');
+
+    await expect(mod.getNewsList()).rejects.toThrow('parameter is required');
+  });
+});
