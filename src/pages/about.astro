@@ -1,6 +1,10 @@
 ---
 // src/pages/about.astro
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { images } from '../data/images';
+
+const heroImage = images.macaronCubes;
+const storyImage = images.giftBoxFlowerWreath;
 
 const values = [
   {
@@ -25,9 +29,12 @@ const values = [
   <section class="page-hero">
     <div class="page-hero__image-wrap">
       <img
-        src="https://placehold.co/1920x600/e8e4de/8b7355?text=About"
-        alt="Aboutページビジュアル"
+        src={heroImage.src}
+        alt={heroImage.alt}
+        width={heroImage.width}
+        height={heroImage.height}
         class="page-hero__image"
+        data-parallax
       />
     </div>
     <div class="page-hero__content">
@@ -38,11 +45,14 @@ const values = [
 
   <section class="brand-story">
     <div class="container brand-story__inner">
-      <div class="brand-story__image-wrap">
+      <div class="brand-story__image-wrap" data-reveal>
         <img
-          src="https://placehold.co/600x800/e8e4de/8b7355?text=Story"
-          alt="ブランドストーリー"
+          src={storyImage.src}
+          alt={storyImage.alt}
+          width={storyImage.width}
+          height={storyImage.height}
           class="brand-story__image"
+          loading="lazy"
         />
       </div>
       <div class="brand-story__text">
@@ -76,6 +86,47 @@ const values = [
   </section>
 </BaseLayout>
 
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // F: page-hero parallax
+  const parallaxImage = document.querySelector<HTMLElement>('[data-parallax]');
+  if (parallaxImage && !reduceMotion) {
+    const hero = parallaxImage.closest<HTMLElement>('.page-hero')!;
+    let ticking = false;
+    const update = () => {
+      const rect = hero.getBoundingClientRect();
+      if (rect.bottom > 0) {
+        parallaxImage.style.transform = `translate3d(0, ${(-rect.top * 0.35).toFixed(1)}px, 0)`;
+      }
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+  }
+
+  // I: brand-story clip reveal (only arm images still below the fold)
+  const revealTargets = document.querySelectorAll<HTMLElement>('[data-reveal]');
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    revealTargets.forEach((el) => {
+      if (el.getBoundingClientRect().top > window.innerHeight) {
+        el.classList.add('is-armed');
+        observer.observe(el);
+      }
+    });
+  }
+</script>
+
 <style>
   .section-label {
     font-size: 0.7rem;
@@ -88,7 +139,12 @@ const values = [
   /* Page Hero */
   .page-hero { position: relative; height: 50svh; min-height: 320px; overflow: hidden; }
   .page-hero__image-wrap { position: absolute; inset: 0; }
-  .page-hero__image { width: 100%; height: 100%; object-fit: cover; }
+  .page-hero__image {
+    width: 100%;
+    height: 135%;
+    object-fit: cover;
+    will-change: transform;
+  }
   .page-hero__content {
     position: relative;
     z-index: 1;
@@ -117,6 +173,11 @@ const values = [
     .brand-story__inner { grid-template-columns: 1fr 1fr; align-items: center; }
   }
   .brand-story__image { width: 100%; aspect-ratio: 3/4; object-fit: cover; }
+  .brand-story__image-wrap.is-armed { clip-path: inset(100% 0 0 0); }
+  .brand-story__image-wrap.is-revealed {
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 1.3s cubic-bezier(0.7, 0, 0.2, 1);
+  }
   .brand-story__heading {
     font-size: clamp(1.25rem, 3vw, 1.75rem);
     font-weight: 300;

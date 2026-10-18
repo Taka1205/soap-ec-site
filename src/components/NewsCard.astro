@@ -1,12 +1,14 @@
 ---
 // src/components/NewsCard.astro
 import type { News } from '../lib/microcms';
+import { images } from '../data/images';
 
 interface Props {
   news: News;
 }
 
 const { news } = Astro.props;
+const fallback = images.tulipCarvedGoldBox;
 const formattedDate = new Date(news.publishedAt).toLocaleDateString('ja-JP', {
   year: 'numeric',
   month: 'long',
@@ -18,12 +20,12 @@ const formattedDate = new Date(news.publishedAt).toLocaleDateString('ja-JP', {
   <a href={`/news/${news.id}`} class="news-card__link">
     <div class="news-card__image-wrap">
       <img
-        src={news.eyecatch?.url ?? 'https://placehold.co/400x300/e8e4de/8b7355?text=News'}
+        src={news.eyecatch?.url ?? fallback.src}
         alt={news.title}
         class="news-card__image"
         loading="lazy"
-        width={news.eyecatch?.width ?? 400}
-        height={news.eyecatch?.height ?? 300}
+        width={news.eyecatch?.width ?? fallback.width}
+        height={news.eyecatch?.height ?? fallback.height}
       />
     </div>
     <div class="news-card__body">

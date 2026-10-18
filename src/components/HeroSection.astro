@@ -1,15 +1,48 @@
 ---
 // src/components/HeroSection.astro
+import { images } from '../data/images';
+
+// 3枚ずつ自動で切り替わる（スマホは1枚ずつ）。枚数は3の倍数にする
+const slides = [
+  images.tulipCarvedGoldBox,
+  images.redRoseSquare,
+  images.blueRoseWoodenBox,
+  images.purpleHydrangeaHeart,
+  images.pinkFlowerHeartPlate,
+  images.lavenderRound,
+  images.rainbowFlowerBar,
+  images.seahorseBlue,
+  images.roseWreathRound,
+  images.purpleFlowerTower,
+  images.heartTinRainbow,
+  images.polkaDotRoseRibbon,
+  images.hydrangeaFlowerTiles,
+  images.marbleWhiteRose,
+  images.heartTopperBox,
+  images.moonStarNight,
+  images.pinkRibbonHeart,
+  images.tulipRound,
+];
+// 先頭3枚の複製を末尾に置き、最後から先頭へ途切れずにつなぐ
+const loopSlides = [...slides, ...slides.slice(0, 3)];
 ---
 
-<section class="hero">
-  <div class="hero__image-wrap">
-    <img
-      src="https://placehold.co/1920x900/e8e4de/8b7355?text=SOAP+BRAND"
-      alt="石鹸ブランドのヒーロービジュアル"
-      class="hero__image"
-      loading="eager"
-    />
+<section class="hero" data-carousel>
+  <div class="hero__carousel">
+    <ul class="hero__track" data-track>
+      {loopSlides.map((s, i) => (
+        <li class="hero__slide" aria-hidden={i >= slides.length ? 'true' : undefined}>
+          <img
+            src={s.src}
+            alt={i >= slides.length ? '' : s.alt}
+            width={s.width}
+            height={s.height}
+            class="hero__image"
+            loading={i < 3 ? 'eager' : 'lazy'}
+          />
+        </li>
+      ))}
+    </ul>
   </div>
   <div class="hero__content">
     <p class="hero__sub">Natural Handmade Soap</p>
@@ -18,6 +51,38 @@
   </div>
 </section>
 
+<script>
+  const root = document.querySelector<HTMLElement>('[data-carousel]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (root && !reduceMotion) {
+    const track = root.querySelector<HTMLElement>('[data-track]')!;
+    const realCount = track.children.length - 3;
+    const perView = () => (window.matchMedia('(min-width: 768px)').matches ? 3 : 1);
+    let index = 0;
+
+    const moveTo = (i: number, animate = true) => {
+      track.style.transition = animate ? '' : 'none';
+      index = i;
+      track.style.transform = `translateX(-${(index * 100) / perView()}%)`;
+    };
+
+    // after sliding onto the cloned head, jump back to the real head without animation
+    track.addEventListener('transitionend', () => {
+      if (index >= realCount) {
+        moveTo(index - realCount, false);
+        void track.offsetWidth;
+      }
+    });
+
+    window.setInterval(() => {
+      if (document.hidden) return;
+      moveTo(index + perView());
+    }, 3000);
+
+    window.addEventListener('resize', () => moveTo(0, false));
+  }
+</script>
+
 <style>
   .hero {
     position: relative;
@@ -25,9 +90,23 @@
     min-height: 480px;
     overflow: hidden;
   }
-  .hero__image-wrap {
+  .hero__carousel {
     position: absolute;
     inset: 0;
+  }
+  .hero__track {
+    display: flex;
+    height: 100%;
+    list-style: none;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .hero__slide {
+    flex: 0 0 100%;
+    height: 100%;
+    padding: 0 2px;
+  }
+  @media (min-width: 768px) {
+    .hero__slide { flex-basis: calc(100% / 3); }
   }
   .hero__image {
     width: 100%;
@@ -45,6 +124,7 @@
     text-align: center;
     padding: 2rem;
     background: rgba(250, 249, 247, 0.4);
+    pointer-events: none;
   }
   .hero__sub {
     font-size: 0.8rem;
@@ -64,12 +144,17 @@
     padding: 0.75rem 2rem;
     border: 1px solid var(--color-accent);
     color: var(--color-accent);
+    background-color: rgba(250, 249, 247, 0.7);
     font-size: 0.875rem;
     letter-spacing: 0.1em;
+    pointer-events: auto;
     transition: background-color 0.2s, color 0.2s;
   }
   .hero__cta:hover {
     background-color: var(--color-accent);
     color: white;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__track { transition: none; }
   }
 </style>

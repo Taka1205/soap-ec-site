@@ -13,7 +13,7 @@ interface Props {
 const {
   title,
   description = '自然素材にこだわった石鹸ブランド。',
-  ogImage = 'https://placehold.co/1200x630/e8e4de/8b7355?text=SOAP+BRAND',
+  ogImage = new URL('/image/og.jpg', Astro.site).href,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -24,10 +24,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} | SOAP BRAND</title>
+    <title>{title} | soap diary</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
-    <meta property="og:title" content={`${title} | SOAP BRAND`} />
+    <meta property="og:title" content={`${title} | soap diary`} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:url" content={canonicalURL} />

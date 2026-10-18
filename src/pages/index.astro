@@ -4,6 +4,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroSection from '../components/HeroSection.astro';
 import { getNewsList } from '../lib/microcms';
 import type { News } from '../lib/microcms';
+import { allImages, images } from '../data/images';
+
+// D: gallery marquee — two rows flowing in opposite directions
+const galleryRows = [
+  allImages.filter((_, i) => i % 2 === 0),
+  allImages.filter((_, i) => i % 2 === 1),
+];
+
+// J: store teaser cards (front / hover image)
+const storeItems = [
+  { front: images.blueRoseGradient, back: images.blueStripeTulle },
+  { front: images.pinkGinghamRose, back: images.pinkMarbleFlower },
+  { front: images.greenLeafCheck, back: images.greenFlowerTwine },
+];
 
 let latestNews: News[] = [];
 try {
@@ -47,6 +61,29 @@ const features = [
     </div>
   </section>
 
+  <section class="gallery" aria-label="作品ギャラリー">
+    <div class="container">
+      <p class="section-label">Gallery</p>
+    </div>
+    <div class="gallery__rows">
+      {galleryRows.map((row, r) => (
+        <div class={`gallery__row${r === 1 ? ' gallery__row--reverse' : ''}`}>
+          {[...row, ...row].map((img, i) => (
+            <img
+              src={img.src}
+              alt={i < row.length ? img.alt : ''}
+              aria-hidden={i < row.length ? undefined : 'true'}
+              width={img.width}
+              height={img.height}
+              class="gallery__image"
+              loading="lazy"
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  </section>
+
   <section class="home-news">
     <div class="container">
       <p class="section-label">Latest News</p>
@@ -71,11 +108,28 @@ const features = [
   <section class="cta-store">
     <div class="container cta-store__inner">
       <p class="section-label">Online Store</p>
+      <ul class="store-cards">
+        {storeItems.map((item) => (
+          <li class="store-card" data-flip>
+            <div class="store-card__photo">
+              <img src={item.front.src} alt={item.front.alt} width={item.front.width} height={item.front.height} loading="lazy" />
+              <img src={item.back.src} alt="" aria-hidden="true" width={item.back.width} height={item.back.height} loading="lazy" />
+            </div>
+          </li>
+        ))}
+      </ul>
       <p class="cta-store__text">近日公開予定です。お楽しみに。</p>
       <span class="cta-store__badge">Coming Soon</span>
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  // J: tap to switch photo on touch devices
+  document.querySelectorAll<HTMLElement>('[data-flip]').forEach((card) => {
+    card.addEventListener('click', () => card.classList.toggle('is-flipped'));
+  });
+</script>
 
 <style>
   .section-label {
@@ -105,6 +159,29 @@ const features = [
   .features__name { font-size: 1rem; font-weight: 500; margin-bottom: 0.75rem; }
   .features__desc { font-size: 0.875rem; color: var(--color-text-light); line-height: 1.8; }
 
+  /* Gallery (D: marquee) */
+  .gallery { padding: var(--spacing-section) 0; overflow: hidden; }
+  .gallery__rows { display: flex; flex-direction: column; gap: 12px; }
+  .gallery__row {
+    display: flex;
+    width: max-content;
+    animation: gallery-flow 90s linear infinite;
+  }
+  .gallery__row--reverse { animation-direction: reverse; animation-duration: 100s; }
+  .gallery__rows:hover .gallery__row { animation-play-state: paused; }
+  /* margin instead of gap so the -50% loop point lands exactly on the seam */
+  .gallery__image { height: 220px; width: auto; margin-right: 12px; }
+  @media (min-width: 768px) {
+    .gallery__image { height: 280px; }
+  }
+  @keyframes gallery-flow {
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gallery__row { animation: none; }
+    .gallery__rows { overflow-x: auto; }
+  }
+
   /* Home News */
   .home-news { padding: var(--spacing-section) 0; background-color: #f5f1ec; }
   .home-news__list { list-style: none; }
@@ -132,6 +209,37 @@ const features = [
     border: 1px solid var(--color-border);
     padding: 4rem 2rem;
   }
+  .store-cards {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    max-width: 760px;
+    margin: 0 auto 2.5rem;
+  }
+  @media (min-width: 768px) {
+    .store-cards { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  }
+  @media (max-width: 767px) {
+    .store-card:nth-child(3) { display: none; }
+  }
+  .store-card { cursor: pointer; }
+  .store-card__photo {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+  }
+  .store-card__photo img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.6s;
+  }
+  .store-card__photo img + img { opacity: 0; }
+  .store-card:hover .store-card__photo img + img,
+  .store-card.is-flipped .store-card__photo img + img { opacity: 1; }
   .cta-store__text { font-size: 0.875rem; color: var(--color-text-light); margin-bottom: 1.5rem; }
   .cta-store__badge {
     display: inline-block;
