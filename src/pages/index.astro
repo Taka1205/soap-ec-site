@@ -4,7 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroSection from '../components/HeroSection.astro';
 import { getNewsList } from '../lib/microcms';
 import type { News } from '../lib/microcms';
-import { allImages, images } from '../data/images';
+import { allImages, images, newsImage } from '../data/images';
 
 // D: gallery marquee — two rows flowing in opposite directions
 const galleryRows = [
@@ -91,6 +91,14 @@ const features = [
         {latestNews.map((news) => (
           <li class="home-news__item">
             <a href={`/news/${news.id}`} class="home-news__link">
+              <img
+                src={newsImage(news).src}
+                alt=""
+                width={newsImage(news).width}
+                height={newsImage(news).height}
+                class="home-news__thumb"
+                loading="lazy"
+              />
               <time class="home-news__date" datetime={news.publishedAt}>
                 {new Date(news.publishedAt).toLocaleDateString('ja-JP')}
               </time>
@@ -188,15 +196,28 @@ const features = [
   .home-news__item { border-bottom: 1px solid var(--color-border); }
   .home-news__item:first-child { border-top: 1px solid var(--color-border); }
   .home-news__link {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 1.25rem;
+    row-gap: 0.25rem;
+    align-items: center;
     padding: 1.25rem 0;
     transition: opacity 0.2s;
   }
+  .home-news__thumb {
+    grid-row: span 2;
+    width: 96px;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
   .home-news__link:hover { opacity: 0.7; }
+  .home-news__date, .home-news__title { align-self: end; }
+  .home-news__title { align-self: start; }
   @media (min-width: 768px) {
-    .home-news__link { flex-direction: row; gap: 2rem; align-items: center; }
+    .home-news__link { grid-template-columns: 120px auto 1fr; grid-template-rows: auto; column-gap: 2rem; }
+    .home-news__thumb { grid-row: auto; width: 120px; }
+    .home-news__date, .home-news__title { align-self: center; }
   }
   .home-news__date { font-size: 0.8rem; color: var(--color-text-light); flex-shrink: 0; }
   .home-news__title { font-size: 0.9rem; }

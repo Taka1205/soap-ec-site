@@ -51,3 +51,32 @@ export const images = {
 } satisfies Record<string, SoapImage>;
 
 export const allImages: SoapImage[] = Object.values(images);
+
+// お知らせにアイキャッチがないときの代替写真
+export const newsFallbackImages: SoapImage[] = [
+  images.giftBoxFlowerWreath,
+  images.lavenderRound,
+  images.redRoseSquare,
+  images.seahorseBlue,
+  images.purpleFlowerTower,
+  images.tulipCarvedGoldBox,
+  images.heartTinRainbow,
+  images.blueRoseWoodenBox,
+];
+
+type NewsImageSource = {
+  id: string;
+  eyecatch?: { url: string; width: number; height: number };
+};
+
+// 記事IDから代替写真を決める（同じ記事には毎回同じ写真）
+export function newsImage(news: NewsImageSource): Omit<SoapImage, 'alt'> {
+  if (news.eyecatch) {
+    const { url, width, height } = news.eyecatch;
+    return { src: url, width, height };
+  }
+  let hash = 0;
+  for (const ch of news.id) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  const { src, width, height } = newsFallbackImages[hash % newsFallbackImages.length];
+  return { src, width, height };
+}

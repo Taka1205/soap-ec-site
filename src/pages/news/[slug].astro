@@ -3,6 +3,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getAllNewsSlugs, getNewsDetail } from '../../lib/microcms';
 import type { GetStaticPaths } from 'astro';
+import { newsImage } from '../../data/images';
 import type { News } from '../../lib/microcms';
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -38,6 +39,8 @@ const formattedDate = new Date(news.publishedAt).toLocaleDateString('ja-JP', {
   day: 'numeric',
 });
 
+const image = newsImage(news);
+
 const rawDescription = news.body.replace(/<[^>]+>/g, '').slice(0, 120);
 const description = rawDescription.length === 120 ? rawDescription + '…' : rawDescription;
 ---
@@ -50,16 +53,14 @@ const description = rawDescription.length === 120 ? rawDescription + '…' : raw
         <h1 class="news-detail__title">{news.title}</h1>
       </header>
 
-      {news.eyecatch && (
-        <div class="news-detail__eyecatch">
-          <img
-            src={news.eyecatch.url}
-            alt={news.title}
-            width={news.eyecatch.width}
-            height={news.eyecatch.height}
-          />
-        </div>
-      )}
+      <div class="news-detail__eyecatch">
+        <img
+          src={image.src}
+          alt={news.title}
+          width={image.width}
+          height={image.height}
+        />
+      </div>
 
       <div class="news-detail__body" set:html={news.body} />
 
